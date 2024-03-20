@@ -14,7 +14,11 @@
         <a href="/" class="navbar-brand">
             <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Z Logo">
         </a>
-        <a href="/login" class="navbar-login">Login</a>
+        {% if not logged_in %}
+            <a href="/login" class="navbar-login">Login</a>
+        {% else %}
+            <a href="/logout" class="navbar-login">Logout</a>
+        {% endif %}
     </nav>
 
     <!-- Content -->

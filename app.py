@@ -1,5 +1,5 @@
 from flask import Flask, render_template,request, send_from_directory,redirect,url_for,make_response
-from authentication import extract_credentials,validate_password,extract_credentialslogin
+from authentication import extract_credentials,validate_password
 from pymongo import MongoClient
 from db import db
 import bcrypt
@@ -15,7 +15,16 @@ def add_header(response):
 
 @app.route('/')
 def index():
-    return render_template("index.html", content_type='text/html')
+
+    auth_token = request.cookies.get("auth_token")
+
+    # checks if user is logged in
+    if auth_token:
+        log = True
+    else:
+        log = False
+
+    return render_template("index.html", content_type='text/html', logged_in=log)
 
 #takes the user to the register form
 @app.route("/register")
