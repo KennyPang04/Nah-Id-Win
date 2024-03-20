@@ -34,3 +34,13 @@ def extract_credentials(request):
     password2 = parts[2].split("=")[1]
 
     return username, password1, password2
+
+def extract_credentialslogin(request):
+    # Parse the request body to extract form data
+    body = request.get_data(as_text=True)
+    parts = body.split("&")
+    username = parts[0].split("=")[1]
+    password = parts[1].split("=")[1]
+
+    return username, password
+
