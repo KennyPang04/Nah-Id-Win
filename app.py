@@ -1,4 +1,4 @@
-from flask import Flask, render_template,request, send_from_directory,redirect,url_for,make_response,request
+from flask import Flask, render_template,request, send_from_directory,redirect,url_for,make_response
 from authentication import extract_credentials,validate_password
 from pymongo import MongoClient
 from db import db
@@ -15,7 +15,7 @@ def add_header(response):
 
 @app.route('/')
 def index():
-
+    print("hello")
     auth_token = request.cookies.get("auth_token")
 
     # checks if user is logged in
@@ -79,8 +79,6 @@ def login():
         return resp
     else:
         return {'message': 'Invalid username or password'}
-
-
 
 @app.route('/static/js/<path:filename>')
 def js(filename):   

@@ -14,10 +14,13 @@
         <a href="/" class="navbar-brand">
             <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Z Logo">
         </a>
+        <!--Checks if user is log in to show log out-->
         {% if not logged_in %}
             <a href="/login" class="navbar-login">Login</a>
         {% else %}
-            <a href="/logout" class="navbar-login">Logout</a>
+            <form action="/logout" method="post">
+                <button class="navbar-login" type="submit">Logout</button>
+            </form>
         {% endif %}
     </nav>
 
