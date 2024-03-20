@@ -17,6 +17,17 @@ def add_header(response):
 def index():
     return render_template("index.html", content_type='text/html')
 
+#takes the user to the register form
+@app.route("/register")
+def registerPath():
+    return render_template('register.html', content_type='text/html')
+
+#takes the user to the login form
+@app.route("/login")
+def loginPath():
+    return render_template('login.html', content_type='text/html')
+
+#register user
 @app.route('/auth-register', methods=['POST'])
 def register():
     username,password1,password2 = extract_credentials(request)
@@ -36,32 +47,6 @@ def register():
     db.accounts.insert_one(data)
     return redirect(url_for('login'))
 
-@app.route('/auth-login',methods=['POST'])
-def login():
-    username = request.form('username')
-    password = request.form('password')
-
-    user = db.accounts.find_one({'username':username})
-    if user == None:
-        return "username not found"
-
-    else:
-        salt = user["salt"]
-        
-
-
-    return redirect(url_for('/'))
-
-
-
-
-
-
-
-
-@app.route('/login')
-def login():
-    return render_template("login.html", content_type='text/html')
 
 @app.route('/static/js/<path:filename>')
 def js(filename):   
