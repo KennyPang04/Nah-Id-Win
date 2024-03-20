@@ -47,28 +47,30 @@ def register():
     db.accounts.insert_one(data)
     return redirect(url_for('login'))
 
-@app.route('/auth-login',methods=['POST'])
+@app.route('/auth-login', methods=['POST'])
 def login():
-    username = request.form('username')
-    password = request.form('password')
+    username = request.form.get('username')
+    password = request.form.get('password')
 
-    user = db.accounts.find_one({'username':username})
-    if user == None:
-        return "username not found"
+    # Retrieve user from database
+    user = db.accounts.find_one({'username': username})
 
+    if user and bcrypt.checkpw(password.encode(), user['password'].encode()):
+        # Generate a new token
+        token = secrets.token_urlsafe(16)
+
+        # Store the token in the user's account
+        db.accounts.update_one({'username': username}, {'$set': {'token': token}})
+
+        # Create a response object
+        resp = make_response(redirect('/'))  # Redirect to the homepage
+
+        # Set the token as a cookie
+        resp.set_cookie('auth_token', token, httponly=True, max_age=3600)  # Expires in 1 hour
+
+        return resp
     else:
-        salt = user["salt"]
-        
-
-
-    return redirect(url_for('/'))
-
-
-
-
-
-
-
+        return {'message': 'Invalid username or password'}
 
 @app.route('/login')
 def login():
