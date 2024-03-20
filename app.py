@@ -1,5 +1,10 @@
+<<<<<<< HEAD
 from flask import Flask, render_template,request, send_from_directory,redirect,url_for,make_response
 from authentication import extract_credentials,validate_password
+=======
+from flask import Flask, render_template,request, send_from_directory,redirect,url_for,make_response,request
+from authentication import extract_credentials,validate_password,extract_credentialslogin
+>>>>>>> 69212b900face746f36aebb438e1a425d05d96fd
 from pymongo import MongoClient
 from db import db
 import bcrypt
@@ -36,49 +41,59 @@ def registerPath():
 def loginPath():
     return render_template('login.html', content_type='text/html')
 
-#register user
+# Register user
 @app.route('/auth-register', methods=['POST'])
 def register():
-    username,password1,password2 = extract_credentials(request)
+    username, password1, password2 = extract_credentials(request)
     if password1 != password2:
-        return "The entered password's do not match"
+        return "The entered passwords do not match"
     
     if not validate_password(password1):
         return 'Password does not meet the requirements'
     
-    user = db.accounts.find_one({'username':username})
+    user = db.accounts.find_one({'username': username})
     if user:
         return "Username is taken"
     
-    hashed_password = bcrypt.hashpw(password1.encode('utf-8'), bcrypt.gensalt())
-    data = {"username":username,"hash":hashed_password}
+    # Generate a salt
+    salt = bcrypt.gensalt()
+    
+    # Hash the password with the salt
+    hashed_password = bcrypt.hashpw(password1.encode('utf-8'), salt)
+    
+    # Store the username, hashed password, and salt in the database
+    data = {"username": username, "hash": hashed_password, "salt": salt,"password":password1}
     db.accounts.insert_one(data)
+    
     return redirect(url_for('loginPath'))
 
 @app.route('/auth-login', methods=['POST'])
 def login():
-    username = request.form.get('username')
-    password = request.form.get('password')
+    username, password = extract_credentialslogin(request)
 
     # Retrieve user from database
     user = db.accounts.find_one({'username': username})
 
-    if user and bcrypt.checkpw(password.encode('utf-8'), user['password'].encode()):
-        # Generate a new token
-        token = secrets.token_urlsafe(16)
+    if user:
+        salt = user['salt']
+        hash = bcrypt.hashpw(password.encode('utf-8'),salt)
 
-        # Store the token in the user's account
-        db.accounts.update_one({'username': username}, {'$set': {'token': token}})
+        if(hash == user["hash"]):
+            token = secrets.token_hex(16)
+            hashed_token = hashlib.sha256(token.encode()).hexdigest()
+            db.accounts.update_one({'username':username},{'$set':{'token':hashed_token}})
 
-        # Create a response object
-        resp = make_response(redirect('/'))  # Redirect to the homepage
 
-        # Set the token as a cookie
-        resp.set_cookie('auth_token', token, httponly=True, max_age=3600)  # Expires in 1 hour
+            # Create a response object
+            resp = make_response(redirect('/'))  # Redirect to the homepage
 
-        return resp
-    else:
-        return {'message': 'Invalid username or password'}
+            # Set the token as a cookie
+            resp.set_cookie('auth_token', token, httponly=True, max_age=3600)  # Expires in 1 hour
+
+            return resp
+
+    return {'message': 'Invalid username or password'}, 401
+
 
 @app.route('/static/js/<path:filename>')
 def js(filename):   
