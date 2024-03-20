@@ -1,4 +1,10 @@
-from flask import Flask, render_template, send_from_directory
+from flask import Flask, render_template,request, send_from_directory,redirect,url_for
+from authentication import extract_credentials,validate_password
+from pymongo import MongoClient
+from db import db
+import bcrypt
+import hashlib
+import secrets
 
 app = Flask(__name__)
 
@@ -10,6 +16,26 @@ def add_header(response):
 @app.route('/')
 def index():
     return render_template("index.html", content_type='text/html')
+
+@app.route('/auth-register', methods=['POST'])
+def register():
+    username,password1,password2 = extract_credentials(request)
+    if password1 != password2:
+        "The entered password's do not match"
+    
+    if not validate_password(password1):
+        return 'Password does not meet the requirements'
+    
+    user = db.accounts.find_one({'username':username})
+    if user:
+        return "Username is taken"
+    
+    salt = bcrypt.gensalt()
+    hash = bcrypt.hashpw(password1.encode('utf-8'),salt)
+    data = {"username":username,"salt":salt,"hash":hash}
+    db.accounts.insert_one(data)
+    return redirect(url_for('login'))
+
 
 @app.route('/login')
 def login():
