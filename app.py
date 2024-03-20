@@ -72,9 +72,7 @@ def login():
     else:
         return {'message': 'Invalid username or password'}
 
-@app.route('/login')
-def login():
-    return render_template("login.html", content_type='text/html')
+
 
 @app.route('/static/js/<path:filename>')
 def js(filename):   
