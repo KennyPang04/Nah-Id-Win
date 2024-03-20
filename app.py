@@ -17,6 +17,17 @@ def add_header(response):
 def index():
     return render_template("index.html", content_type='text/html')
 
+#takes the user to the register form
+@app.route("/register")
+def registerPath():
+    return render_template('register.html', content_type='text/html')
+
+#takes the user to the login form
+@app.route("/login")
+def loginPath():
+    return render_template('login.html', content_type='text/html')
+
+#register user
 @app.route('/auth-register', methods=['POST'])
 def register():
     username,password1,password2 = extract_credentials(request)
@@ -36,30 +47,28 @@ def register():
     db.accounts.insert_one(data)
     return redirect(url_for('login'))
 
-@app.route('/login', methods=['POST'])
+@app.route('/auth-login',methods=['POST'])
 def login():
-    username = request.form.get('username')
-    password = request.form.get('password')
+    username = request.form('username')
+    password = request.form('password')
 
-    # Retrieve user from database
-    user = db.accounts.find_one({'username': username})
+    user = db.accounts.find_one({'username':username})
+    if user == None:
+        return "username not found"
 
-    if user and bcrypt.checkpw(password.encode(), user['password'].encode()):
-        # Generate a new token
-        token = secrets.token_urlsafe(16)
-
-        # Store the token in the user's account
-        db.accounts.update_one({'username': username}, {'$set': {'token': token}})
-
-        # Create a response object
-        resp = make_response(redirect('/'))  # Redirect to the homepage
-
-        # Set the token as a cookie
-        resp.set_cookie('auth_token', token, httponly=True, max_age=3600)  # Expires in 1 hour
-
-        return resp
     else:
-        return {'message': 'Invalid username or password'}
+        salt = user["salt"]
+        
+
+
+    return redirect(url_for('/'))
+
+
+
+
+
+
+
 
 @app.route('/login')
 def login():

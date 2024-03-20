@@ -1,32 +1,29 @@
 <!-- register.html -->
 {% extends "base.html" %}
 
-{% block title %}Register - Zhi{% endblock %}
+{% block title %}Register{% endblock %}
 
 {% block css %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/register.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
 {% endblock %}
 
 {% block content %}
-    <div class="register-container">
-        <div class="left-side">
-            <!-- Left side content for users trying to register an account -->
-            <h2>Create an Account</h2>
+    <div class = "auth-container">
+        <div class = "auth-box">
+            <h2>Register</h2>
             <form action="/auth-register" method="post">
-                <input type="text" name="username" placeholder="Username"><br>
-                <input type="password" name="password1" placeholder="Password"><br>
-                <input type="password" name="password2" placeholder="Reenter Your Password"><br>
-                <button type="submit">Register</button>
+                <div class="textbox">
+                    <input type="text" placeholder="Username" name="username" required>
+                </div>
+                <div class="textbox">
+                    <input type="password" placeholder="Password" name="password" required>
+                </div>
+                <div class="textbox">
+                    <input type="password" placeholder="Reenter your password" name="password" required>
+                </div>
+                <button class="btn" type="submit">Register</button>
             </form>
-        </div>
-        <div class="right-side">
-            <!-- Right side content for users trying to login -->
-            <h2>Login to Your Account</h2>
-            <form action="/auth-login" method="post">
-                <input type="text" name="username" placeholder="Username"><br>
-                <input type="password" name="password" placeholder="Password"><br>
-                <button type="submit">Login</button>
-            </form>
+            <p class="text">Have an account? <a href="/login">Login</a></p>
         </div>
     </div>
 {% endblock %}
