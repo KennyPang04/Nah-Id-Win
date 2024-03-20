@@ -36,6 +36,28 @@ def register():
     db.accounts.insert_one(data)
     return redirect(url_for('login'))
 
+@app.route('/auth-login',methods=['POST'])
+def login():
+    username = request.form('username')
+    password = request.form('password')
+
+    user = db.accounts.find_one({'username':username})
+    if user == None:
+        return "username not found"
+
+    else:
+        salt = user["salt"]
+        
+
+
+    return redirect(url_for('/'))
+
+
+
+
+
+
+
 
 @app.route('/login')
 def login():
