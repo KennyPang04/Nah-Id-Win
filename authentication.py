@@ -1,3 +1,5 @@
+#helper functions for loggining in
+
 def validate_password(password):
     # Check if password length is at least 8 characters
     if len(password) < 8:
