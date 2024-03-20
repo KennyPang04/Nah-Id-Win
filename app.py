@@ -32,7 +32,7 @@ def loginPath():
 def register():
     username,password1,password2 = extract_credentials(request)
     if password1 != password2:
-        "The entered password's do not match"
+        return "The entered password's do not match"
     
     if not validate_password(password1):
         return 'Password does not meet the requirements'
@@ -41,11 +41,10 @@ def register():
     if user:
         return "Username is taken"
     
-    salt = bcrypt.gensalt()
-    hash = bcrypt.hashpw(password1.encode('utf-8'),salt)
-    data = {"username":username,"salt":salt,"hash":hash}
+    hashed_password = bcrypt.hashpw(password1.encode('utf-8'), bcrypt.gensalt())
+    data = {"username":username,"hash":hashed_password}
     db.accounts.insert_one(data)
-    return redirect(url_for('login'))
+    return redirect(url_for('loginPath'))
 
 @app.route('/auth-login', methods=['POST'])
 def login():
@@ -55,7 +54,7 @@ def login():
     # Retrieve user from database
     user = db.accounts.find_one({'username': username})
 
-    if user and bcrypt.checkpw(password.encode(), user['password'].encode()):
+    if user and bcrypt.checkpw(password.encode('utf-8'), user['password'].encode()):
         # Generate a new token
         token = secrets.token_urlsafe(16)
 
