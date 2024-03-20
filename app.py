@@ -1,5 +1,5 @@
-from flask import Flask, render_template,request, send_from_directory,redirect,url_for,make_response
-from authentication import extract_credentials,validate_password
+from flask import Flask, render_template,request, send_from_directory,redirect,url_for,make_response,request
+from authentication import extract_credentials,validate_password,extract_credentialslogin
 from pymongo import MongoClient
 from db import db
 import bcrypt
