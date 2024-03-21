@@ -1,10 +1,5 @@
-<<<<<<< HEAD
-from flask import Flask, render_template,request, send_from_directory,redirect,url_for,make_response
-from authentication import extract_credentials,validate_password
-=======
 from flask import Flask, render_template,request, send_from_directory,redirect,url_for,make_response,request
 from authentication import extract_credentials,validate_password,extract_credentialslogin
->>>>>>> 69212b900face746f36aebb438e1a425d05d96fd
 from pymongo import MongoClient
 from db import db
 import bcrypt
@@ -23,9 +18,14 @@ def index():
     print("hello")
     auth_token = request.cookies.get("auth_token")
 
+    username = None
     # checks if user is logged in
     if auth_token:
         log = True
+        hashed_token = hashlib.sha256(auth_token.encode()).hexdigest()
+        user = db.accounts.find_one({"token":hashed_token})
+        username = user['username']
+        return render_template("index.html", content_type='text/html', logged_in=log, username=username)
     else:
         log = False
 
@@ -62,6 +62,8 @@ def register():
     hashed_password = bcrypt.hashpw(password1.encode('utf-8'), salt)
     
     # Store the username, hashed password, and salt in the database
+    
+    #REMEMBER TO REMOVE PASSWORD FIELD WHEN FINAL SUBMISSION
     data = {"username": username, "hash": hashed_password, "salt": salt,"password":password1}
     db.accounts.insert_one(data)
     
@@ -94,6 +96,17 @@ def login():
 
     return {'message': 'Invalid username or password'}, 401
 
+@app.route("/logout", methods=["POST"])
+def logout():
+    token = request.cookies.get("auth_token")
+    hashed_token = hashlib.sha256(token.encode()).hexdigest()
+    
+    db.accounts.update_one({"token": hashed_token},{"$unset":{"token":""}})
+
+    resp = make_response(redirect('/'))
+
+    resp.set_cookie('auth_token', '', expires=0)
+    return resp
 
 @app.route('/static/js/<path:filename>')
 def js(filename):   
