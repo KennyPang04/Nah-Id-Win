@@ -3,9 +3,15 @@
 {% block title %}Home - Zhi{% endblock %}
 
 {% block content %}
-    <h1>Welcome to Zhi</h1>
+    <h1>Welcome to Z</h1>
     <p id="js_test"></p>
 
+    <!--If user is logged in show username-->
+    {% if username %}
+        <p>Hello {{ username }}</p>
+    {% else %}
+        <p>Hello Guest</p>
+    {% endif %}
     <!-- New post button -->
     <a href="#" class="new-post-button">+</a>
 {% endblock %}
