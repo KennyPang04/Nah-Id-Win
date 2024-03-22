@@ -5,6 +5,8 @@ from db import db
 import bcrypt
 import hashlib
 import secrets
+import extra
+import chats
 
 app = Flask(__name__)
 
@@ -40,6 +42,28 @@ def registerPath():
 @app.route("/login")
 def loginPath():
     return render_template('login.html', content_type='text/html')
+
+#takes the user to the post form
+@app.route("/post")
+def postPath():
+    auth_token = request.cookies.get("auth_token")
+    
+    # User must be logged in to post
+    if auth_token:
+        return render_template('post.html', content_type='text/html', logged_in=True)
+    else:
+        return redirect('/')
+    
+@app.route('/send-post', methods=['POST'])
+def posting():
+    body = extra.escape_html(request.get_data(as_text=True))
+    split = body.split('&', 1)
+    t = extra.replace_encoded(split[0].split('=', 1)[1])
+    q = extra.replace_encoded(split[1].split('=', 1)[1])
+
+    db.posts.insert_one({'title': t, "question": q})
+
+    return redirect('/')
 
 # Register user
 @app.route('/auth-register', methods=['POST'])
@@ -84,7 +108,6 @@ def login():
             token = secrets.token_hex(16)
             hashed_token = hashlib.sha256(token.encode()).hexdigest()
             db.accounts.update_one({'username':username},{'$set':{'token':hashed_token}})
-
 
             # Create a response object
             resp = make_response(redirect('/'))  # Redirect to the homepage

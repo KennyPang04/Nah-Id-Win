@@ -1,0 +1,26 @@
+<!-- post.html -->
+{% extends "base.html" %}
+
+{% block title %}Post Question{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/post.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="postContainer">
+    <div class="postBox">
+        <h2>Post a Question!</h2>
+        <form action="/send-post" method="post">
+            <div class="textbox">
+                <input type="text" placeholder="Title" name="title" required>
+            </div>
+            <div class="textbox">
+                <input type="text" placeholder="Enter Your Question" name="question" id="quest" required>
+            </div>
+            
+            <button class="butt" type="submit" value="post">Submit</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
