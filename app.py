@@ -28,7 +28,7 @@ def index():
         user = db.accounts.find_one({"token":hashed_token})
         username = user['username']
         # check for posts and load posts
-        if not db is None:  #if there is a database
+        if db.posts is not None:  #if there is a database
             data = db.posts.find({})
             return render_template("index.html", content_type='text/html', logged_in=log, data=data, username=username)  
         else:
@@ -36,7 +36,7 @@ def index():
     else:
         log = False
     #for guest page, check for posts and loads them
-    if not db is None:  #if there is a database
+    if db.posts is not None:  #if there is a database
         data = db.posts.find({})
         return render_template("index.html", content_type='text/html', logged_in=log, data=data)
     
@@ -77,9 +77,35 @@ def posting():
         user = db.accounts.find_one({"token":hashed_token})
         username = user['username']
 
-    db.posts.insert_one({'title': t, "question": q, "username": username})
+    if db.posts is not None:
+        if db.posts.find_one({}) is None: 
+            db.posts.insert_one({'title': t, "question": q, "username": username, "post_id": 1, "liked_users": [], "like_count": 0})
+        else:
+            collections = list(db.posts.find({}))
+            num = len(collections)
+            db.posts.insert_one({'title': t, "question": q, "username": username, "post_id": num+1, "liked_users": [], "like_count": 0})
 
     return redirect('/')
+
+@app.route('/like/<post_id>', methods=['POST'])
+def like(post_id):
+    auth_token = request.cookies.get("auth_token")
+    # checks if user is logged in
+    if auth_token:
+        hashed_token = hashlib.sha256(auth_token.encode()).hexdigest()
+        user = db.accounts.find_one({"token":hashed_token})
+        username = user['username']
+        
+        dbPost = db.posts.find_one({'post_id':post_id})
+        if username in dbPost['liked_users']:    #check if the user has liked the post (liking again == not liking)
+            dbPost['liked_users'].remove(username)
+            dbPost['like_count'] = len(dbPost['liked_users'])
+        else:                                    # if they have not liked or have unliked,they can like the post
+            dbPost['liked_users'].append(username)
+            dbPost['like_count'] = len(dbPost['liked_users'])
+        return redirect('/')
+    else:
+        return redirect('/login')
 
 # Register user
 @app.route('/auth-register', methods=['POST'])

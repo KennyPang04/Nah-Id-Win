@@ -8,7 +8,7 @@
 }
 
 .new-post {
-    overflow:inherit;
+    word-wrap: break-word;
     width: 1080px;
     height: 200px;
     background-color: #ffff;
