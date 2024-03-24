@@ -27,11 +27,21 @@ def index():
         hashed_token = hashlib.sha256(auth_token.encode()).hexdigest()
         user = db.accounts.find_one({"token":hashed_token})
         username = user['username']
-        return render_template("index.html", content_type='text/html', logged_in=log, username=username)
+        # check for posts and load posts
+        if not db is None:  #if there is a database
+            data = db.posts.find({})
+            return render_template("index.html", content_type='text/html', logged_in=log, data=data, username=username)  
+        else:
+            return render_template("index.html", content_type='text/html', logged_in=log, username=username)
     else:
         log = False
-
+    #for guest page, check for posts and loads them
+    if not db is None:  #if there is a database
+        data = db.posts.find({})
+        return render_template("index.html", content_type='text/html', logged_in=log, data=data)
+    
     return render_template("index.html", content_type='text/html', logged_in=log)
+
 
 #takes the user to the register form
 @app.route("/register")
@@ -52,7 +62,7 @@ def postPath():
     if auth_token:
         return render_template('post.html', content_type='text/html', logged_in=True)
     else:
-        return redirect('/')
+        return redirect('/login')
     
 @app.route('/send-post', methods=['POST'])
 def posting():

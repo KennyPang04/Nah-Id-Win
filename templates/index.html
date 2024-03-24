@@ -12,6 +12,18 @@
     {% else %}
         <p>Hello Guest</p>
     {% endif %}
+
+    <!-- New posts -->
+    {% for each_data in data %}
+        <div class = "total-new-post">
+            <div class="new-post">
+                <h1><b>{{ each_data["title"] }}</b></h1>
+                <p>{{ each_data["question"] }}</p>
+
+            </div>
+        </div>
+    {% endfor %}
+
     <!-- New post button -->
     <a href="/post" class="new-post-button">+</a>
 {% endblock %}
