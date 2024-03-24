@@ -96,13 +96,35 @@ def like(post_id):
         user = db.accounts.find_one({"token":hashed_token})
         username = user['username']
         
-        dbPost = db.posts.find_one({'post_id':post_id})
+        dbPost = db.posts.find_one({'post_id': int(post_id)})
         if username in dbPost['liked_users']:    #check if the user has liked the post (liking again == not liking)
-            dbPost['liked_users'].remove(username)
-            dbPost['like_count'] = len(dbPost['liked_users'])
-        else:                                    # if they have not liked or have unliked,they can like the post
-            dbPost['liked_users'].append(username)
-            dbPost['like_count'] = len(dbPost['liked_users'])
+            arr = dbPost['liked_users']
+            arr.remove(username)
+            updateM = {
+                "$set": {
+                    'title': dbPost['title'], 
+                    "question": dbPost["question"], 
+                    "username": dbPost["username"], 
+                    "post_id": dbPost["post_id"], 
+                    "liked_users": arr, 
+                    "like_count": len(arr)
+                    }
+            }
+            db.posts.update_one({'post_id': int(post_id)}, updateM)
+        else: # if they have not liked or have unliked,they can like the post
+            arr = dbPost['liked_users']
+            arr.append(username)
+            updateM = {
+                "$set": {
+                    'title': dbPost['title'], 
+                    "question": dbPost["question"], 
+                    "username": dbPost["username"], 
+                    "post_id": dbPost["post_id"], 
+                    "liked_users": arr, 
+                    "like_count": len(arr)
+                }
+            }
+            db.posts.update_one({'post_id': int(post_id)}, updateM)
         return redirect('/')
     else:
         return redirect('/login')
