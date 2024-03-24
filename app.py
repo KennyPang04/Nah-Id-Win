@@ -70,8 +70,14 @@ def posting():
     split = body.split('&', 1)
     t = extra.replace_encoded(split[0].split('=', 1)[1])
     q = extra.replace_encoded(split[1].split('=', 1)[1])
+    auth_token = request.cookies.get("auth_token")
+    username = "Guest" # If shows up as Guest (something is broken)
+    if auth_token:
+        hashed_token = hashlib.sha256(auth_token.encode()).hexdigest()
+        user = db.accounts.find_one({"token":hashed_token})
+        username = user['username']
 
-    db.posts.insert_one({'title': t, "question": q})
+    db.posts.insert_one({'title': t, "question": q, "username": username})
 
     return redirect('/')
 
