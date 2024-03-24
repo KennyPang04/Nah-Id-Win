@@ -152,7 +152,7 @@ def register():
     # Store the username, hashed password, and salt in the database
     
     #REMEMBER TO REMOVE PASSWORD FIELD WHEN FINAL SUBMISSION
-    data = {"username": username, "hash": hashed_password, "salt": salt,"password":password1}
+    data = {"username": username, "hash": hashed_password, "salt": salt}
     db.accounts.insert_one(data)
     
     return redirect(url_for('loginPath'))
