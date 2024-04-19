@@ -7,8 +7,12 @@ import hashlib
 import secrets
 import extra
 import chats
+from flask_uploads import UploadSet, configure_uploads, IMAGES, UploadNotAllowed
 
 app = Flask(__name__)
+photos = UploadSet('photos', IMAGES)
+app.config['UPLOADED_PHOTOS_DEST'] = 'static/images'
+configure_uploads(app, photos)
 
 @app.after_request
 def add_header(response):
@@ -78,13 +82,23 @@ def posting():
         user = db.accounts.find_one({"token":hashed_token})
         username = user['username']
 
+    filename = ""
+    if 'photo' in request.files:
+        try:
+            filename = photos.save(request.files['photo'])
+        except UploadNotAllowed:
+            pass
+    print(filename)
+
+
+
     if db.posts is not None:
         if db.posts.find_one({}) is None: 
-            db.posts.insert_one({'title': t, "question": q, "username": username, "post_id": 1, "liked_users": [], "like_count": 0})
+            db.posts.insert_one({'title': t, "question": q, "username": username, "post_id": 1, "liked_users": [], "like_count": 0, 'file':filename})
         else:
             collections = list(db.posts.find({}))
             num = len(collections)
-            db.posts.insert_one({'title': t, "question": q, "username": username, "post_id": num+1, "liked_users": [], "like_count": 0})
+            db.posts.insert_one({'title': t, "question": q, "username": username, "post_id": num+1, "liked_users": [], "like_count": 0, 'file':filename})
 
     return redirect('/')
 

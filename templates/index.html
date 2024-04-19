@@ -23,6 +23,9 @@
                 <br/>
                 <p>{{ each_data["question"] }}</p>
                 <br/>
+                "{{ url_for('static', filename='images/{{ each_data["file"] }}') }}"
+                <img src="{{ url_for('static', filename='images/{{ each_data["file"] }}') }}"></img>
+                <bt/>
                 <form action="/like/{{ each_data["post_id"] }}" method="POST">
                     <!-- Image for Like Button -->
                     <button type="submit" class="like-button">
