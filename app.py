@@ -7,12 +7,10 @@ import hashlib
 import secrets
 import extra
 import chats
-from flask_uploads import UploadSet, configure_uploads, IMAGES, UploadNotAllowed
+import os
 
 app = Flask(__name__)
-photos = UploadSet('photos', IMAGES)
-app.config['UPLOADED_PHOTOS_DEST'] = 'static/images'
-configure_uploads(app, photos)
+
 
 @app.after_request
 def add_header(response):
@@ -82,13 +80,17 @@ def posting():
         user = db.accounts.find_one({"token":hashed_token})
         username = user['username']
 
-    filename = ""
-    if 'photo' in request.files:
-        try:
-            filename = photos.save(request.files['photo'])
-        except UploadNotAllowed:
-            pass
-    print(filename)
+    upload_folder = "static/images"
+    file_count = sum([len(files) for _, _, files in os.walk(upload_folder)])
+    print(f" counter before {file_count}")
+    filename = f"no img.png"
+    if 'file'  in request.files:
+        filename = f"image{file_count}.png"
+        file = request.files['file']
+        file.save(filename)
+    
+    file_count = sum([len(files) for _, _, files in os.walk(upload_folder)])
+    print(f" counter after {file_count}")
 
 
 
