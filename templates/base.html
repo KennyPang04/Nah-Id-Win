@@ -12,7 +12,15 @@
 <body>
     <!-- Navbar -->
     <nav class="navbar">
-        <a href="/" class="navbar-brand">
+        <div class="welcomeName">
+            <!--If user is logged in show username-->
+            {% if username %}
+            <p>Welcome,<br> {{ username }}</p>
+            {% else %}
+            <p>Welcome,<br> Guest</p>
+        {% endif %} 
+        </div>
+        <a href="/" class="logo">
             <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Z Logo">
         </a>
         <!--Checks if user is log in to show log out-->

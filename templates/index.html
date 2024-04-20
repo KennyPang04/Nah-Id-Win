@@ -3,15 +3,16 @@
 {% block title %}Home - Zhi{% endblock %}
 
 {% block content %}
-    <h1>Welcome to Z</h1>
-    <p id="js_test"></p>
 
-    <!--If user is logged in show username-->
-    {% if username %}
-        <p>Hello {{ username }}</p>
-    {% else %}
-        <p>Hello Guest</p>
-    {% endif %}
+    <div class="categories">
+        <label for="categories">Categories:</label>
+        <select id="categories">
+            <option value="all">All</option>
+            <option value="cars">Cars</option>
+            <option value="phones">Phones</option>
+        </select>
+    </div>
+    
 
     <!-- New posts -->
     <div class="all">
