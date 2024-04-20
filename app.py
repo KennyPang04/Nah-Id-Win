@@ -6,6 +6,7 @@ from db import db
 import bcrypt
 import hashlib
 import secrets
+import html
 import extra
 import chats
 import os
@@ -77,8 +78,8 @@ def posting():
     app.logger.debug(request.files)
     
     # Access form data
-    t = request.form.get('title')
-    q = request.form.get('question')
+    t = html.escape(request.form.get('title'))
+    q = html.escape(request.form.get('question'))
 
     auth_token = request.cookies.get("auth_token")
     username = "Guest" # If shows up as Guest (something is broken)
@@ -88,8 +89,11 @@ def posting():
         username = user['username']
 
     file = request.files['file']
+    type = file.filename.split(".",1)[1]
+    file_count = len(os.listdir(app.config['UPLOAD_FOLDER']))
+    
     if file:
-        filename = secure_filename(file.filename)
+        filename = secure_filename(f"userupload{file_count}.{type}")
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
         
 
@@ -224,9 +228,18 @@ def css(filename):
 
 @app.route('/static/image/<path:filename>')
 def img(filename):
-    app.logger.debug(filename)
-    app.logger.debug(send_from_directory('static/image', filename, mimetype='image/png'))
-    return send_from_directory('static/image', filename, mimetype='image/png')
+    splits = filename.split(".",1)
+    mimetype = ""
+    if splits[1] == "jpg":
+        mimetype = "image/jpg"
+    if splits[1] == "jpeg":
+        mimetype = "image/jpeg"
+    if splits[1] == "png":
+        mimetype = "image/png"
+    if splits[1] == "gif":
+        mimetype = "image/gif"
+
+    return send_from_directory('static/image', filename, mimetype=mimetype)
 
 
 
