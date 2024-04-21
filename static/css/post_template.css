@@ -6,26 +6,35 @@
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%)
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 0 2px #acd4ff; /* Add line highlight */
+    resize : none;
 }
 
 .postBox {
     width: 720px;
     padding: 40px;
-    background-color: #ffff;
+    background-color: #ffffff;
     border-radius: 8px;
-    box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1)
+    box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
+    resize : none;
 }
 
 .postBox h2 {
     margin-bottom: 20px;
-    color: #333
+    color: #333;
+    resize : none;
 }
 
-.textbox {
-    position: relative;
-    margin-bottom: 20px;
+.textbox textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    outline: none;
+    resize: none; /* Disable resizing */
 }
+
 
 .textbox input {
     width: 100%;
@@ -33,6 +42,7 @@
     border: 1px solid #ccc;
     border-radius: 5px;
     outline: none;
+    resize: none; /* Disable resizing */
 }
 
 #quest {
@@ -48,4 +58,17 @@
     background-color: #007bff;
     color: #fff;
     cursor: pointer;
+}
+
+/* CSS for image container */
+.image-container {
+    max-width: 100%; /* Ensure the image container doesn't exceed its parent's width */
+    overflow: hidden; /* Hide any part of the image that exceeds the container */
+    margin-bottom: 10px; /* Add some space below the image */
+}
+
+/* CSS for images inside the container */
+.post-image {
+    width: 100%; /* Ensure the image fills the container width */
+    height: auto; /* Maintain the correct aspect ratio */
 }
