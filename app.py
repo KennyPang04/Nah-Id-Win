@@ -9,19 +9,15 @@ import secrets
 import html
 import extra
 import chats
-
 import os
-
-from flask_socketio import send, emit, SocketIO
+from flask_socketio import  emit, SocketIO
 
 app = Flask(__name__)
-app.config["SECRET_KEY"] = 'super top secret!'
+app.config["SECRET_KEY"] = 'another_key'
 socketio = SocketIO(app)
 
 UPLOAD_FOLDER = 'static/images/'
 ALLOWED_EXTENSIONS = {'png'}
-
-app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 
