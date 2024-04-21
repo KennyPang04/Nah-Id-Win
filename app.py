@@ -86,10 +86,14 @@ def postPath():
 @app.route("/chat")
 def chat():
     auth_token = request.cookies.get("auth_token")
-    
+    username = None
     # User must be logged in to post
     if auth_token:
-        return render_template('global.html', content_type='text/html', logged_in=True, data=db.global_chat.find({}))
+        hashed_token = hashlib.sha256(auth_token.encode()).hexdigest()
+        user = db.accounts.find_one({"token":hashed_token})
+        if(user != None):
+            username = user['username']
+        return render_template('global.html', content_type='text/html', logged_in=True, data=db.global_chat.find({}), username=username)
     else:
         return redirect('/login')
     
