@@ -67,9 +67,15 @@ def loginPath():
 def postPath():
     auth_token = request.cookies.get("auth_token")
     
+    username = None
     # User must be logged in to post
     if auth_token:
-        return render_template('post.html', content_type='text/html', logged_in=True)
+        hashed_token = hashlib.sha256(auth_token.encode()).hexdigest()
+        user = db.accounts.find_one({"token":hashed_token})
+        if(user != None):
+            username = user['username']
+
+        return render_template('post.html', content_type='text/html', logged_in=True, username=username)
     else:
         return redirect('/login')
     
