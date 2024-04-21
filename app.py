@@ -7,8 +7,11 @@ import hashlib
 import secrets
 import extra
 import chats
+from flask_socketio import send, emit, SocketIO
 
 app = Flask(__name__)
+app.config["SECRET_KEY"] = 'super top secret!'
+socketio = SocketIO(app)
 
 @app.after_request
 def add_header(response):
@@ -62,6 +65,17 @@ def postPath():
     # User must be logged in to post
     if auth_token:
         return render_template('post.html', content_type='text/html', logged_in=True)
+    else:
+        return redirect('/login')
+    
+#takes the user to the global chat 
+@app.route("/chat")
+def chat():
+    auth_token = request.cookies.get("auth_token")
+    
+    # User must be logged in to post
+    if auth_token:
+        return render_template('global.html', content_type='text/html', logged_in=True)
     else:
         return redirect('/login')
     
@@ -208,7 +222,20 @@ def css(filename):
 def img(filename):
     return send_from_directory('static/image', filename, mimetype='image/png')
 
+@socketio.on("sends")
+def sending(data):
+    auth_token = request.cookies.get("auth_token")
 
+    username = None
+    # checks if user is logged in
+    if auth_token:
+        hashed_token = hashlib.sha256(auth_token.encode()).hexdigest()
+        user = db.accounts.find_one({"token":hashed_token})
+        if(user != None):
+            username = user['username']
 
-if __name__ == __name__:
-    app.run(debug=True, host='0.0.0.0', port=8080)
+    emit("chat", {'username': username, 'message': data}, broadcast=True)
+
+if __name__ == '__main__':
+    # app.run(debug=True, host='0.0.0.0', port=8080)
+    socketio.run(app, debug=True, host='0.0.0.0', port=8080, allow_unsafe_werkzeug=True)
