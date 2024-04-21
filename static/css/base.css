@@ -82,6 +82,9 @@ body {
 .new-post-button:hover {
     background-color: #2980b9; /* Darker blue on hover */
 }
+#chat-button {
+    margin-right: 80px;
+}
 
 
 /* Style for like button */
