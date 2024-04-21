@@ -3,37 +3,42 @@
 {% block title %}Home - Zhi{% endblock %}
 
 {% block content %}
-    <h1>Welcome to Z</h1>
-    <p id="js_test"></p>
 
-    <!--If user is logged in show username-->
-    {% if username %}
-        <p>Hello {{ username }}</p>
-    {% else %}
-        <p>Hello Guest</p>
-    {% endif %}
+    <div class="categories">
+        <label for="categories">Categories:</label>
+        <select id="categories">
+            <option value="all">All</option>
+            <option value="cars">Cars</option>
+            <option value="phones">Phones</option>
+        </select>
+    </div>
+    
 
     <!-- New posts -->
     <div class="all">
-        {% for each_data in data %}
-        <div class = "total-new-post">
-            <div class="new-post">
-                <h2><b>{{ each_data["title"] }}</b></h2> 
-                <h4>Posted by: {{ each_data["username"]}}</h4>
-                <br/>
-                <p>{{ each_data["question"] }}</p>
-                <br/>
-                <form action="/like/{{ each_data["post_id"] }}" method="POST">
-                    <!-- Image for Like Button -->
-                    <button type="submit" class="like-button">
-                        <img src="{{ url_for('static', filename='images/like-button.png') }}" alt="Like">
-                    </button>
-                    <!-- Display Like Count -->
-                    <span>{{ each_data["like_count"] }}</span>
-                </form>
+        <div class="grid-container">
+            {% for each_data in data %}
+            <div class = "total-new-post">
+                <div class="new-post">
+                    <div class="product-image">
+                        <img src="static/images/{{each_data['file']}}" alt="Uploaded Image">
+                    </div>
+                    <div class="post-details">
+                        <h3><b>{{ each_data["title"] }}</b></h3>
+                        <p>Posted by: {{ each_data["username"]}}</p>
+                        <form action="/like/{{ each_data["post_id"] }}" method="POST">
+                            <!-- Image for Like Button -->
+                            <button type="submit" class="like-button">
+                                <img src="{{ url_for('static', filename='images/like-button.png') }}" alt="Like">
+                            </button>
+                            <!-- Display Like Count -->
+                            <span>{{ each_data["like_count"] }}</span>
+                        </form>
+                    </div>
+                </div>
             </div>
+            {% endfor %}
         </div>
-        {% endfor %}
     </div>
     
     
