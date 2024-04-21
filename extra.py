@@ -19,4 +19,3 @@ def file_string(path: str): # For Response Body
         string = file.read()
         file.close()
         return string
-    
