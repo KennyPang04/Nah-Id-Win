@@ -1,14 +1,22 @@
-from flask import Flask, render_template,request, send_from_directory,redirect,url_for,make_response,request
+from flask import Flask, flash, render_template,request, send_from_directory,redirect,url_for,make_response
+from werkzeug.utils import secure_filename
 from authentication import extract_credentials,validate_password,extract_credentialslogin
 from pymongo import MongoClient
 from db import db
 import bcrypt
 import hashlib
 import secrets
+import html
 import extra
 import chats
+import os
+
+
+UPLOAD_FOLDER = 'static/images/'
+ALLOWED_EXTENSIONS = {'png'}
 
 app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 @app.after_request
 def add_header(response):
@@ -67,10 +75,12 @@ def postPath():
     
 @app.route('/send-post', methods=['POST'])
 def posting():
-    body = extra.escape_html(request.get_data(as_text=True))
-    split = body.split('&', 1)
-    t = extra.replace_encoded(split[0].split('=', 1)[1])
-    q = extra.replace_encoded(split[1].split('=', 1)[1])
+    app.logger.debug(request.files)
+    
+    # Access form data
+    t = html.escape(request.form.get('title'))
+    q = html.escape(request.form.get('question'))
+
     auth_token = request.cookies.get("auth_token")
     username = "Guest" # If shows up as Guest (something is broken)
     if auth_token:
@@ -78,13 +88,25 @@ def posting():
         user = db.accounts.find_one({"token":hashed_token})
         username = user['username']
 
+    file = request.files['file']
+    type = file.filename.split(".",1)[1]
+    file_count = len(os.listdir(app.config['UPLOAD_FOLDER']))
+    
+    if file:
+        filename = secure_filename(f"userupload{file_count}.{type}")
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        
+
+
     if db.posts is not None:
         if db.posts.find_one({}) is None: 
-            db.posts.insert_one({'title': t, "question": q, "username": username, "post_id": 1, "liked_users": [], "like_count": 0})
+            db.posts.insert_one({'title': t, "question": q, "username": username, "post_id": 1, "liked_users": [], "like_count": 0, 'file':filename})
+            app.logger.debug(f"filename on db = {filename}")
         else:
             collections = list(db.posts.find({}))
             num = len(collections)
-            db.posts.insert_one({'title': t, "question": q, "username": username, "post_id": num+1, "liked_users": [], "like_count": 0})
+            db.posts.insert_one({'title': t, "question": q, "username": username, "post_id": num+1, "liked_users": [], "like_count": 0, 'file':filename})
+            app.logger.debug(f"filename on db = {filename}")
 
     return redirect('/')
 
@@ -206,7 +228,18 @@ def css(filename):
 
 @app.route('/static/image/<path:filename>')
 def img(filename):
-    return send_from_directory('static/image', filename, mimetype='image/png')
+    splits = filename.split(".",1)
+    mimetype = ""
+    if splits[1] == "jpg":
+        mimetype = "image/jpg"
+    if splits[1] == "jpeg":
+        mimetype = "image/jpeg"
+    if splits[1] == "png":
+        mimetype = "image/png"
+    if splits[1] == "gif":
+        mimetype = "image/gif"
+
+    return send_from_directory('static/image', filename, mimetype=mimetype)
 
 
 

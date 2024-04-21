@@ -11,12 +11,15 @@
 <div class="postContainer">
     <div class="postBox">
         <h2>Post a Question!</h2>
-        <form action="/send-post" method="post">
+        <form action="/send-post" method="post" enctype="multipart/form-data">
             <div class="textbox">
                 <input type="text" placeholder="Title" name="title" required>
             </div>
             <div class="textbox">
                 <textarea type="text" placeholder="Enter Your Question" name="question" id="quest" required></textarea>
+            </div>
+            <div class="fileupload">
+                <input type="file" id="myFile" placeholder="upload a file" name="file" id="quest" required></input>
             </div>
             
             <button class="butt" type="submit" value="post">Submit</button>
