@@ -24,6 +24,10 @@
 
 #messages {
     height: 512px;
+    text-align: left;
+    justify-content: left;
+    align-items: left;
+    word-wrap: break-word;
 }
 
 #space {

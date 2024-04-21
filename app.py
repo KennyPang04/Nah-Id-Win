@@ -75,7 +75,7 @@ def chat():
     
     # User must be logged in to post
     if auth_token:
-        return render_template('global.html', content_type='text/html', logged_in=True)
+        return render_template('global.html', content_type='text/html', logged_in=True, data=db.global_chat.find({}))
     else:
         return redirect('/login')
     
@@ -235,6 +235,8 @@ def sending(data):
             username = user['username']
 
     emit("chat", {'username': username, 'message': data}, broadcast=True)
+    db.global_chat.insert_one({'username': username, 'message': data})
+
 
 if __name__ == '__main__':
     # app.run(debug=True, host='0.0.0.0', port=8080)

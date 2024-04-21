@@ -11,7 +11,15 @@
 <div id="chatroom">
     <div id="box">
         <h2> Global Chat </h2>
-        <div id="messages"> </div>
+        <div id="messages"> 
+            {% for global_chat in data %}
+            <span class="msg">
+                {{global_chat["username"]}}: {{global_chat["message"]["message"]}} 
+            </span>
+            </br>
+            {% endfor %}
+
+        </div>
 
         <div id="space">
             <input id="inputMSG" type="text" placeholder="Message" required>
@@ -34,7 +42,7 @@
     }
 
     const displayMsg = (data) => {
-        var message = "<span> " + data["username"] + ": " + data["message"]["message"] + " </span></br>";
+        var message = "<span class=\"msgs\"> " + data["username"] + ": " + data["message"]["message"] + " </span></br>";
         messages.innerHTML += message;
     }
 
