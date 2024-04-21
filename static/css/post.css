@@ -3,35 +3,57 @@
     padding-left: 40px;
 }
 
-.total-new-post {
-    padding-bottom: 8px;
-}
-
-.new-post p {
-    font-size: 16px;
-}
-
 .grid-container {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px; /* Add gap between grid items */
 }
 
 .new-post {
     border: 1px solid #ccc;
-    padding: 20px;
-    text-align: center;
+    position: relative;
 }
 
-.new-post img {
-    max-width: 100%;
-    height: auto;
+.product-image img {
+    max-width: 80%; /* Ensure image doesn't exceed container width */
+    max-height: 80%; /* Ensure image doesn't exceed container height */
+    display: block;
+    margin: auto; /* Center image horizontally */
+}
+
+.product-image {
+    width: 100%; /* Adjust width of image container */
+    aspect-ratio: 3/2; /* Adjust aspect ratio as needed */
+}
+
+.new-post:before {
+    content: '';
+    position: absolute;
+    top: 80%; /* Position the line in the middle of the container */
+    left: 0;
+    right: 0;
+    height: 1px;
+    background-color: #000000; /* Line color */
+    z-index: 1; /* Ensure the line is behind the image and content */
 }
 
 .post-details {
+    position: absolute;
+    top: calc(80% + 5px); /* Place post details just below the line */
+    left: 10px; /* Adjust as needed */
+    width: calc(100% - 20px); /* Adjust the width to fit the content */
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    justify-content: space-between; /* Align items to the left and right */
+    align-items: center; /* Center vertically */
+}
+
+.post-details h3 {
+    margin-bottom: 5px;
+}
+
+.post-details h3,
+.post-details p {
+    margin: 0;
 }
 
 /* Style for like button */

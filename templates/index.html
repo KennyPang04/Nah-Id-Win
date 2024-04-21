@@ -20,12 +20,12 @@
             {% for each_data in data %}
             <div class = "total-new-post">
                 <div class="new-post">
-                    <img src="static/images/{{each_data['file']}}" alt="Uploaded Image" width="200" height="200">
-                     
+                    <div class="product-image">
+                        <img src="static/images/{{each_data['file']}}" alt="Uploaded Image">
+                    </div>
                     <div class="post-details">
                         <h3><b>{{ each_data["title"] }}</b></h3>
-                        <br/>
-                        <h4>Posted by: {{ each_data["username"]}}</h4>
+                        <p>Posted by: {{ each_data["username"]}}</p>
                         <form action="/like/{{ each_data["post_id"] }}" method="POST">
                             <!-- Image for Like Button -->
                             <button type="submit" class="like-button">
