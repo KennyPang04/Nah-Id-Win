@@ -30,11 +30,23 @@ body {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Add shadow for depth */
 }
 
-.navbar-brand {
+.welcomeName {
+    color: white;
+    font-size: 20;
+    align-items: center;
+    display: flex;
+}
+
+.logo img {
+    display: flex;
+    justify-content: center; 
+    align-items: center;
     font-size: 24px;
     font-weight: bold;
     color: #ffffff; /* Light text color */
     text-decoration: none;
+    max-width: 100px; 
+    height: auto;
 }
 
 .navbar-login {
@@ -82,32 +94,23 @@ body {
 .new-post-button:hover {
     background-color: #2980b9; /* Darker blue on hover */
 }
-
-
-/* Style for like button */
-.like-button {
-    border: none;
-    background: none;
-    padding: 0;
-    cursor: pointer;
-    outline: none;
-    transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+#chat-button {
+    margin-right: 80px;
 }
 
-.like-button img {
-    width: 20px; /* Set the width of the image */
-    height: auto; /* Maintain aspect ratio */
+.categories {
+    margin-top: 20px; 
+    font-size: 18px; 
 }
 
-/* Style for like button on hover */
-.like-button:hover img {
-    transform: scale(1.3) rotate(5deg); /* Scale and rotate the button slightly when clicked */
+.categories label {
+    margin-right: 10px; 
 }
 
-/* Style for like button when clicked */
-.like-button.clicked img {
-    filter: brightness(1.5); /* Increase brightness when clicked */
-    filter: hue-rotate(180deg); /* Change the hue to blue */
-    transform: scale(1.1) rotate(5deg); /* Scale and rotate the button slightly when clicked */
-    box-shadow: 0 0 10px rgba(0, 0, 255, 0.5); /* Add a blue shadow when clicked */
+.categories select {
+    font-size: 16px; 
+    padding: 5px; 
 }
+
+
+

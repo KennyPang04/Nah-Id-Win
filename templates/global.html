@@ -1,0 +1,54 @@
+<!-- post.html -->
+{% extends "base.html" %}
+
+{% block title %}Global Chat{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}">
+{% endblock %}
+
+{% block content %}
+<div id="chatroom">
+    <div id="box">
+        <h2> Global Chat </h2>
+        <div id="messages"> 
+            {% for global_chat in data %}
+            <span class="msg">
+                {{global_chat["username"]}}: {{global_chat["message"]["message"]}} 
+            </span>
+            </br>
+            {% endfor %}
+
+        </div>
+
+        <div id="space">
+            <input id="inputMSG" type="text" placeholder="Message" required>
+            <button id="butt" type="submit" onClick="sendMsg()">Submit</button>
+        </div>
+        
+    </div>
+</div>
+<script type="text/javascript">
+    var sockets = io();
+    const chats = document.getElementById("messages");
+
+    const sendMsg = () => {
+        var input = document.getElementById("inputMSG").value;
+        // input = input.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
+        if (input != "") {
+            sockets.emit("sends", {message: input});
+        }
+        document.getElementById("inputMSG").value = "";
+    }
+
+    const displayMsg = (data) => {
+        var message = "<span class=\"msgs\"> " + data["username"] + ": " + data["message"]["message"] + " </span></br>";
+        messages.innerHTML += message;
+    }
+
+    sockets.on("chat", (data) => {
+        console.log(data);
+        displayMsg(data);
+    });
+</script>
+{% endblock %}

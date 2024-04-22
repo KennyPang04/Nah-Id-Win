@@ -8,11 +8,25 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/post.css') }}">
     {% block css %}{% endblock %}
+
+    <script 
+        src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" 
+        integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" 
+        crossorigin="anonymous">
+    </script>
 </head>
 <body>
     <!-- Navbar -->
     <nav class="navbar">
-        <a href="/" class="navbar-brand">
+        <div class="welcomeName">
+            <!--If user is logged in show username-->
+            {% if username %}
+            <p>Welcome,<br> {{ username }}</p>
+            {% else %}
+            <p>Welcome,<br> Guest</p>
+        {% endif %} 
+        </div>
+        <a href="/" class="logo">
             <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Z Logo">
         </a>
         <!--Checks if user is log in to show log out-->
