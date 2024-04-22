@@ -19,7 +19,6 @@ UPLOAD_FOLDER = 'static/images/'
 ALLOWED_EXTENSIONS = {'png'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-
 @app.after_request
 def add_header(response):
     response.headers['X-Content-Type-Options'] = 'nosniff'
@@ -282,4 +281,4 @@ def sending(data):
 
 if __name__ == '__main__':
     # app.run(debug=True, host='0.0.0.0', port=8080)
-    socketio.run(app, debug=True, host='0.0.0.0', port=8080, allow_unsafe_werkzeug=True)
+    socketio.run(app, debug=True, host='0.0.0.0', port=8080)
