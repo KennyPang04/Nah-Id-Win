@@ -10,11 +10,15 @@ import html
 import extra
 import os
 from flask_socketio import  emit, SocketIO
+import ssl
 
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.environ.get('SECRET_KEY')
 socketio = SocketIO(app)
+
+cert_file = "/etc/letsencrypt/live/nahidwin.org/fullchain.pem/"
+key_file = "/etc/letsencrypt/live/nahidwin.org/privkey.pem/"
 
 UPLOAD_FOLDER = 'static/images/'
 ALLOWED_EXTENSIONS = {'png'}
@@ -282,5 +286,7 @@ def sending(data):
 
 
 if __name__ == '__main__':
+    context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+    context.load_cert_chain(cert_file, key_file)
     # app.run(debug=True, host='0.0.0.0', port=8080)
-    socketio.run(app, debug=True, host='0.0.0.0', port=8080, allow_unsafe_werkzeug=True)
+    socketio.run(app, debug=True, host='0.0.0.0', port=8080, allow_unsafe_werkzeug=True, ssl_context=context)
