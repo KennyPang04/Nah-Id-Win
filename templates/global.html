@@ -29,8 +29,7 @@
     </div>
 </div>
 <script type="text/javascript">
-    var sockets = io();
-    sockets.connect("wss://nahidwin.org/chat")
+    var sockets = io.connect("https://nahidwin.org/chat");
 
     const chats = document.getElementById("messages");
 
