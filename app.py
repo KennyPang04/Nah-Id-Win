@@ -11,6 +11,7 @@ import extra
 import os
 from flask_socketio import  emit, SocketIO
 
+
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.environ.get('SECRET_KEY')
 socketio = SocketIO(app)
@@ -18,6 +19,7 @@ socketio = SocketIO(app)
 UPLOAD_FOLDER = 'static/images/'
 ALLOWED_EXTENSIONS = {'png'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
 
 @app.after_request
 def add_header(response):
@@ -112,14 +114,13 @@ def posting():
 
     file = request.files['file']
     type = file.filename.split(".",1)[1]
-    if type == "jpg" or type == "jpeg" or type == "png" or type == "gif":
-        file_count = len(os.listdir(app.config['UPLOAD_FOLDER']))
+    file_count = len(os.listdir(app.config['UPLOAD_FOLDER']))
+    
+    if file:
+        filename = secure_filename(f"userupload{file_count}.{type}")
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
         
-        if file:
-            filename = secure_filename(f"userupload{file_count}.{type}")
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-    else:
-        filename = "no img.png"
+
 
     if db.posts is not None:
         if db.posts.find_one({}) is None: 
@@ -282,4 +283,4 @@ def sending(data):
 
 if __name__ == '__main__':
     # app.run(debug=True, host='0.0.0.0', port=8080)
-    socketio.run(app, debug=True, host='0.0.0.0', port=8080)
+    socketio.run(app, debug=True, host='0.0.0.0', port=8080, allow_unsafe_werkzeug=True)
