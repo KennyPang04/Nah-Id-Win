@@ -112,13 +112,14 @@ def posting():
 
     file = request.files['file']
     type = file.filename.split(".",1)[1]
-    file_count = len(os.listdir(app.config['UPLOAD_FOLDER']))
-    
-    if file:
-        filename = secure_filename(f"userupload{file_count}.{type}")
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+    if type == "jpg" or type == "jpeg" or type == "png" or type == "gif":
+        file_count = len(os.listdir(app.config['UPLOAD_FOLDER']))
         
-
+        if file:
+            filename = secure_filename(f"userupload{file_count}.{type}")
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+    else:
+        filename = "no img.png"
 
     if db.posts is not None:
         if db.posts.find_one({}) is None: 
