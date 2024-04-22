@@ -6,6 +6,10 @@ services:
     build: .
     environment:
       WAIT_HOSTS: mongo:27017
-      SECRET_KEY: $(SECRET_KEY)
+      SECRET_KEY: "${SECRET_KEY}" # Change the secret to socket if needed
     ports:
+<<<<<<< HEAD
       - '8080:8080'
+=======
+      - '8080:8080'
+>>>>>>> 39da6b7c682b4ad28ced9e4503c4360dbb0ed3fc
