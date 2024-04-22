@@ -34,7 +34,7 @@
 
     const sendMsg = () => {
         var input = document.getElementById("inputMSG").value;
-        input = input.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
+        // input = input.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
         if (input != "") {
             sockets.emit("sends", {message: input});
         }

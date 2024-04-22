@@ -275,7 +275,7 @@ def sending(data):
         user = db.accounts.find_one({"token":hashed_token})
         if(user != None):
             username = user['username']
-
+    data["message"] = extra.escape_html(data["message"])
     emit("chat", {'username': username, 'message': data}, broadcast=True)
     db.global_chat.insert_one({'username': username, 'message': data})
 
