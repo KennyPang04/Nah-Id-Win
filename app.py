@@ -8,12 +8,11 @@ import hashlib
 import secrets
 import html
 import extra
-import chats
 import os
 from flask_socketio import  emit, SocketIO
 
 app = Flask(__name__)
-app.config["SECRET_KEY"] = 'another_key'
+app.config["SECRET_KEY"] = os.environ.get('SECRET_KEY')
 socketio = SocketIO(app)
 
 UPLOAD_FOLDER = 'static/images/'
