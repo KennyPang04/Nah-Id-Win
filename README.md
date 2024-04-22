@@ -3,9 +3,9 @@
 Here is a link to our webapp!
 https://nahidwin.org/
 
-Authentication: Login/Logout__
-Interactive Posts: Auction Page with like button (for now)__
-Multimedia: Pictures for Auction Page__
-Websockets: Global Chat__
-__
+Authentication: Login/Logout<br>
+Interactive Posts: Auction Page with like button (for now)<br>
+Multimedia: Pictures for Auction Page<br>
+Websockets: Global Chat<br>
+<br>
 WARNING: some things might be broken due to unfamiliarity to hosting a webapp (everything works in testing I think)
