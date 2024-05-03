@@ -1,7 +1,6 @@
-from flask import Flask, flash, render_template,request, send_from_directory,redirect,url_for,make_response
+from flask import Flask, render_template,request, send_from_directory,redirect,url_for,make_response,abort
 from werkzeug.utils import secure_filename
 from authentication import extract_credentials,validate_password,extract_credentialslogin
-from pymongo import MongoClient
 from db import db
 import bcrypt
 import hashlib
@@ -10,7 +9,9 @@ import html
 import extra
 import os
 from flask_socketio import  emit, SocketIO
-import ssl
+from flask_limiter import Limiter
+import time
+
 
 
 app = Flask(__name__)
@@ -21,15 +22,35 @@ UPLOAD_FOLDER = 'static/images/'
 ALLOWED_EXTENSIONS = {'png'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
+ipaddress = {}
+
+def getIpAddress():
+    ipaddy = None
+    if 'X-Forwarded-For' in request.headers:
+        return request.headers['X-Forwarded-For'].split(',')[0].strip()
+    return ipaddy
+
+limiter = Limiter(
+    app,
+    key_func=getIpAddress,
+    default_limits=["50 per second"]
+)
 
 @app.after_request
 def add_header(response):
     response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['Cache-Control'] = 'no-store'
     return response
 
 @app.route('/')
+@limiter.limit("50 per 10 seconds")
 def index():
     print("hello")
+
+    addy = getIpAddress()
+    if (addy != None) and (addy in ipaddress) and (ipaddress[addy] > time.time()):
+        abort(429)
+        
     auth_token = request.cookies.get("auth_token")
 
     username = None
