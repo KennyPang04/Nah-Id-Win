@@ -40,7 +40,7 @@ def add_header(response):
     return response
 
 @app.route('/')
-@limiter.limit("More than 50 requests within 10 seconds")
+@limiter.limit("50 per 10 seconds")
 def index():
     print("hello")
 
