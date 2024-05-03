@@ -40,13 +40,25 @@ def add_header(response):
     return response
 
 @app.route('/')
-@limiter.limit("50 per 10 seconds")
+@limiter.limit()
 def index():
     print("hello")
 
     addy = getIpAddress()
-    if (addy != None) and (addy in ipaddress) and (ipaddress[addy] > time.time()):
-        abort(429)
+
+    if addy not in ipaddress:
+        ipaddress[addy] = [time.time(), 1]
+    else:
+        curTime = time.time()
+        lastTime, request_count = ipaddress[addy]
+        if curTime - lastTime <= 10:  
+            if request_count >= 50:  
+                ipaddress[addy][0] = curTime + 30 
+                return abort(429)
+            else:
+                ipaddress[addy][1] += 1  
+        else: 
+            ipaddress[addy] = [curTime, 1]
 
     auth_token = request.cookies.get("auth_token")
 
