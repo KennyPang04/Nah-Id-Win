@@ -39,12 +39,17 @@ def add_header(response):
 @app.route('/')
 @limiter.limit("50 per 10 seconds")
 def index():
-    ip = get_remote_address()
-    if ip in ip_address:
-        if time.time() - ip_address[ip]["time"] < 30:
+    addy = get_remote_address()
+    if addy in ip_address:
+        if time.time() - ip_address[addy]["time"] < 30:
             return "Too Many Requests. Please try again later.", 429
         else:
-            del ip_address[ip]
+            del ip_address[addy]
+
+    # Check if rate limit is exceeded
+    if not limiter.check():
+        ip_address[addy] = {"time": time.time()}
+        return "Too Many Requests. Please try again later.", 429
 
     auth_token = request.cookies.get("auth_token")
 
@@ -70,18 +75,6 @@ def index():
         return render_template("index.html", content_type='text/html', logged_in=log, data=data)
     
     return render_template("index.html", content_type='text/html', logged_in=log)
-
-@app.before_request
-def block_ip():
-    ip = get_remote_address()
-    if ip in ip_address:
-        if time.time() - ip_address[ip]["time"] < 30:
-            return "Too Many Requests. Please try again later.", 429
-        else:
-            del ip_address[ip]
-    if not limiter.check():
-        ip_address[ip] = {"time": time.time()}
-        return "Too Many Requests. Please try again later.", 429
 
 #takes the user to the register form
 @app.route("/register")
