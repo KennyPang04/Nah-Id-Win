@@ -10,6 +10,7 @@ import extra
 import os
 from flask_socketio import  emit, SocketIO
 from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 import time
 
 app = Flask(__name__)
@@ -22,16 +23,18 @@ UPLOAD_FOLDER = 'static/images/'
 ALLOWED_EXTENSIONS = {'png'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-ipaddress = {}
-
 def getIpAddress():
     if 'X-Forwarded-For' in request.headers:
         return request.headers['X-Forwarded-For'].split(',')[0].strip()
-    return request.remote_addr
+    return get_remote_address
 
-limiter = Limiter(key_func=getIpAddress)
-
-limiter.init_app(app)
+limiter = Limiter(
+        key_func=getIpAddress,
+        app=app, 
+        default_limits=['50 per 10 seconds'],
+        storage_uri="memory://",
+        block_duration=30
+)
 
 @app.after_request
 def add_header(response):
@@ -43,22 +46,6 @@ def add_header(response):
 @limiter.limit("50 per 10 seconds")
 def index():
     print("hello")
-
-    addy = getIpAddress()
-
-    if addy not in ipaddress:
-        ipaddress[addy] = [time.time(), 1]
-    else:
-        curTime = time.time()
-        lastTime, request_count = ipaddress[addy]
-        if curTime - lastTime <= 10:  
-            if request_count >= 50:  
-                ipaddress[addy][0] = curTime + 30 
-                return abort(429)
-            else:
-                ipaddress[addy][1] += 1  
-        else: 
-            ipaddress[addy] = [curTime, 1]
 
     auth_token = request.cookies.get("auth_token")
 
