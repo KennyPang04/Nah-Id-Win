@@ -80,7 +80,7 @@ def block_ip():
         else:
             del ip_address[ip]
     if not limiter.check():
-        ip_address[ip] = {"timestamp": time.time()}
+        ip_address[ip] = {"time": time.time()}
         return "Too Many Requests. Please try again later.", 429
 
 #takes the user to the register form
