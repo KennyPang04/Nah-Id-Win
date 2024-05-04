@@ -30,6 +30,17 @@ limiter = Limiter(
 )
 
 ip_address = {}
+@app.before_request
+def block_ip():
+    ip = get_remote_address()
+    if not limiter.check():
+        ip_address[ip] = {"time": time.time()}
+        return "Too Many Requests. Please try again later.", 429
+    
+    # Remove IP address from block list after 30 seconds
+    if ip in ip_address and time.time() - ip_address[ip]["time"] >= 30:
+        del ip_address[ip]
+
 @app.after_request
 def add_header(response):
     response.headers['X-Content-Type-Options'] = 'nosniff'
@@ -45,11 +56,6 @@ def index():
             return "Too Many Requests. Please try again later.", 429
         else:
             del ip_address[addy]
-
-    # Check if rate limit is exceeded
-    if not limiter.check():
-        ip_address[addy] = {"time": time.time()}
-        return "Too Many Requests. Please try again later.", 429
 
     auth_token = request.cookies.get("auth_token")
 
