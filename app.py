@@ -23,19 +23,13 @@ UPLOAD_FOLDER = 'static/images/'
 ALLOWED_EXTENSIONS = {'png'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-def getIpAddress():
-    if 'X-Forwarded-For' in request.headers:
-        return request.headers['X-Forwarded-For'].split(',')[0].strip()
-    return get_remote_address
-
 limiter = Limiter(
-        key_func=getIpAddress,
         app=app, 
+        key_func=get_remote_address,
         default_limits=['50 per 10 seconds'],
-        storage_uri="memory://",
-        block_duration=30
 )
 
+ip_address = {}
 @app.after_request
 def add_header(response):
     response.headers['X-Content-Type-Options'] = 'nosniff'
@@ -45,7 +39,12 @@ def add_header(response):
 @app.route('/')
 @limiter.limit("50 per 10 seconds")
 def index():
-    print("hello")
+    ip = get_remote_address()
+    if ip in ip_address:
+        if time.time() - ip_address[ip]["time"] < 30:
+            return "Too Many Requests. Please try again later.", 429
+        else:
+            del ip_address[ip]
 
     auth_token = request.cookies.get("auth_token")
 
@@ -72,6 +71,17 @@ def index():
     
     return render_template("index.html", content_type='text/html', logged_in=log)
 
+@app.before_request
+def block_ip():
+    ip = get_remote_address()
+    if ip in ip_address:
+        if time.time() - ip_address[ip]["time"] < 30:
+            return "Too Many Requests. Please try again later.", 429
+        else:
+            del ip_address[ip]
+    if limiter.hit(ip):
+        if ip not in ip_address:
+            ip_address[ip] = {"time": time.time()}
 
 #takes the user to the register form
 @app.route("/register")
