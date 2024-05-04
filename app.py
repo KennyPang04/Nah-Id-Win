@@ -79,9 +79,9 @@ def block_ip():
             return "Too Many Requests. Please try again later.", 429
         else:
             del ip_address[ip]
-    if limiter.hit(ip):
-        if ip not in ip_address:
-            ip_address[ip] = {"time": time.time()}
+    if not limiter.check():
+        ip_address[ip] = {"timestamp": time.time()}
+        return "Too Many Requests. Please try again later.", 429
 
 #takes the user to the register form
 @app.route("/register")
