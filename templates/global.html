@@ -23,6 +23,7 @@
 
         <div id="space">
             <input id="inputMSG" type="text" placeholder="Message" required>
+            <input id="scheduleMSG" type="text" placeholder="Seconds" required>
             <button id="butt" type="submit" onClick="sendMsg()">Submit</button>
         </div>
         
@@ -36,12 +37,17 @@
 
     const sendMsg = () => {
         var input = document.getElementById("inputMSG").value;
+        var time = document.getElementById("scheduleMSG").value;
         // input = input.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
-        if (input != "") {
-		console.log("this works");
-            sockets.emit("sends", {message: input});
+        if (input != "" && time != "") {
+		    //console.log("this works");
+            if (isNaN(time)) {
+                time = 0;h
+            }
+            sockets.emit("sends", {message: input, delay: time});
         }
         document.getElementById("inputMSG").value = "";
+        document.getElementById("scheduleMSG").value = "";
     }
 
     const displayMsg = (data) => {

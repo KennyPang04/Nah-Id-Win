@@ -40,9 +40,15 @@
     padding: 4px;
 }
 
-#butt {
+#scheduleMSG {
     width: 30%;
     padding: 4px;
+}
+
+#butt {
+    width: 20%;
+    padding: 6px;
+    margin-top: 6px;
     border: none;
     border-radius: 5px;
     background-color: #007bff;
