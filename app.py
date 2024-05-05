@@ -85,7 +85,12 @@ def registerPath():
 #takes the user to the login form
 @app.route("/login")
 def loginPath():
-    return render_template('login.html', content_type='text/html')
+    dark_mode = request.cookies.get('dark_mode')
+    if dark_mode == 'True':
+        dark_mode = True
+    else:
+        dark_mode = False
+    return render_template('login.html', content_type='text/html',dark_mode=dark_mode)
 
 #takes the user to the post form
 @app.route("/post")
