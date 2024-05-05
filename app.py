@@ -27,11 +27,31 @@ def add_header(response):
     response.headers['X-Content-Type-Options'] = 'nosniff'
     return response
 
+@app.route('/toggle-dark-mode')
+def toggle_dark_mode():
+    # Get the current dark mode preference from the cookie
+    dark_mode = request.cookies.get('dark_mode')
+    if dark_mode == 'True':
+        dark_mode = False
+    else:
+        dark_mode = True
+
+    # Update the dark mode preference cookie with the new value
+    resp = make_response(redirect('/'))
+    resp.set_cookie('dark_mode', str(dark_mode))
+
+    return resp
+    
 @app.route('/')
 def index():
     print("hello")
     auth_token = request.cookies.get("auth_token")
 
+    dark_mode = request.cookies.get('dark_mode')
+    if dark_mode == "True":
+        dark_mode = True
+    else:
+        dark_mode = False
     username = None
     # checks if user is logged in
     if auth_token:
@@ -43,17 +63,17 @@ def index():
             # check for posts and load posts
             if db.posts is not None:  #if there is a database
                 data = db.posts.find({})
-                return render_template("index.html", content_type='text/html', logged_in=log, data=data, username=username)  
+                return render_template("index.html", content_type='text/html', logged_in=log, data=data, username=username,dark_mode=dark_mode)  
             else:
-                return render_template("index.html", content_type='text/html', logged_in=log, username=username)
+                return render_template("index.html", content_type='text/html', logged_in=log, username=username,dark_mode=dark_mode)
     else:
         log = False
     #for guest page, check for posts and loads them
     if db.posts is not None:  #if there is a database
         data = db.posts.find({})
-        return render_template("index.html", content_type='text/html', logged_in=log, data=data)
+        return render_template("index.html", content_type='text/html', logged_in=log, data=data,dark_mode=dark_mode)
     
-    return render_template("index.html", content_type='text/html', logged_in=log)
+    return render_template("index.html", content_type='text/html', logged_in=log,dark_mode=dark_mode)
 
 
 #takes the user to the register form

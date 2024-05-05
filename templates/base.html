@@ -5,14 +5,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    {% if not dark_mode %}
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    {% endif %}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/post.css') }}">
-    {% block css %}{% endblock %}
-
+    {% block css %}
+        {% if dark_mode %}
+            <link rel="stylesheet" href="{{ url_for('static', filename='css/darkmode.css') }}">
+        {% endif %}
+    {% endblock %}
     <script 
         src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" 
         integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" 
-        crossorigin="anonymous">
+        crossorigin="anonymous">    
     </script>
 </head>
 <body>

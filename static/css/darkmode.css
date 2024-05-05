@@ -1,0 +1,133 @@
+/* Reset CSS */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #1e1e1e; /* Dark background color */
+    color: #ffffff; /* Light text color */
+    padding-top: 50px; /* Adjust top padding to accommodate navbar */
+}
+
+/* Navbar styles */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: #000000; /* Dark navbar background color */
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Spread items evenly */
+    box-shadow: 0 2px 5px rgba(255, 255, 255, 0.2); /* Add shadow for depth */
+}
+
+.welcomeName {
+    color: white;
+    font-size: 20;
+    align-items: center;
+    display: flex;
+}
+
+.logo img {
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: #ffffff; /* Light text color */
+    text-decoration: none;
+    max-width: 100px; 
+    height: auto;
+}
+
+.navbar-login {
+    padding: 10px 20px;
+    background-color: #3498db; /* Blue login button color */
+    color: #ffffff; /* Light text color */
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.navbar-login:hover {
+    background-color: #2980b9; /* Darker blue on hover */
+}
+
+.navbar-brand img {
+    max-height: 30px; /* Limit the height of the image */
+}
+
+/* Content styles */
+.content {
+    padding: 20px;
+}
+
+/* New post button */
+.new-post-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #3498db; /* Blue button color */
+    color: #ffffff; /* Light text color */
+    border: none;
+    border-radius: 50%; /* Circular button */
+    width: 60px;
+    height: 60px;
+    font-size: 24px;
+    text-align: center;
+    line-height: 60px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Add shadow for depth */
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.new-post-button:hover {
+    background-color: #2980b9; /* Darker blue on hover */
+}
+#chat-button {
+    margin-right: 80px;
+}
+
+.categories {
+    margin-top: 20px; 
+    font-size: 18px; 
+}
+
+.categories label {
+    margin-right: 10px; 
+}
+
+.categories select {
+    font-size: 16px; 
+    padding: 5px; 
+}
+
+/* Dark mode styles */
+.dark-mode body {
+    background-color: #000000; /* Dark background color */
+    color: #ffffff; /* Light text color */
+}
+
+.dark-mode .navbar {
+    background-color: #333333; /* Dark navbar background color */
+    box-shadow: 0 2px 5px rgba(255, 255, 255, 0.2); /* Add shadow for depth */
+}
+
+.dark-mode .navbar-login {
+    background-color: #3498db; /* Blue login button color */
+}
+
+.dark-mode .new-post-button {
+    background-color: #3498db; /* Blue button color */
+}
+
+.dark-mode .new-post-button:hover {
+    background-color: #2980b9; /* Darker blue on hover */
+}
