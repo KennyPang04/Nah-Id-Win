@@ -11,6 +11,7 @@ import extra
 import os
 from flask_socketio import  emit, SocketIO
 import ssl
+import time
 
 
 app = Flask(__name__)
@@ -277,6 +278,11 @@ def sending(data):
         user = db.accounts.find_one({"token":hashed_token})
         if(user != None):
             username = user['username']
+    
+    if data["delay"] != 0 or data["delay"] != None or data["delay"] != "":
+        time.sleep(int(data["delay"]))
+
+
     data["message"] = extra.escape_html(data["message"])
     emit("chat", {'username': username, 'message': data}, broadcast=True)
     db.global_chat.insert_one({'username': username, 'message': data})
