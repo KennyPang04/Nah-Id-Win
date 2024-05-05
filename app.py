@@ -30,16 +30,6 @@ limiter = Limiter(
 )
 
 ip_address = {}
-@app.before_request
-def block_ip():
-    ip = get_remote_address()
-    if not limiter.check():
-        ip_address[ip] = {"time": time.time()}
-        return "Too Many Requests. Please try again later.", 429
-    
-    # Remove IP address from block list after 30 seconds
-    if ip in ip_address and time.time() - ip_address[ip]["time"] >= 30:
-        del ip_address[ip]
 
 @app.after_request
 def add_header(response):
@@ -47,15 +37,25 @@ def add_header(response):
     response.headers['Cache-Control'] = 'no-store'
     return response
 
+@app.errorhandler(429)
+def ratelimit_handler(e):
+    ip = get_remote_address()
+    block_ip(ip)
+    return "Too Many Requests, try again later", 429
+
+def is_ip_blocked(ip):
+    return ip in ip_address and ip_address[ip] > time.time()
+
+def block_ip(ip):
+    ip_address[ip] = time.time() + 30
+
 @app.route('/')
 @limiter.limit("50 per 10 seconds")
 def index():
     addy = get_remote_address()
-    if addy in ip_address:
-        if time.time() - ip_address[addy]["time"] < 30:
-            return "Too Many Requests. Please try again later.", 429
-        else:
-            del ip_address[addy]
+    
+    if is_ip_blocked(addy):
+        return "Too Many Requests, try again later", 429
 
     auth_token = request.cookies.get("auth_token")
 
