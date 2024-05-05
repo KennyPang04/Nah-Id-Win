@@ -270,10 +270,12 @@ def logout():
     return resp
 
 @app.route('/static/js/<path:filename>')
+@limiter.limit("50 per 10 seconds")
 def js(filename):   
     return send_from_directory('static/js', filename, mimetype='text/javascript')
 
 @app.route('/static/css/<path:filename>')
+@limiter.limit("50 per 10 seconds")
 def css(filename):
     return send_from_directory('static/css', filename, mimetype='text/css')
 
@@ -293,6 +295,7 @@ def img(filename):
     return send_from_directory('static/image', filename, mimetype=mimetype)
 
 @socketio.on("sends")
+@limiter.limit("50 per 10 seconds")
 def sending(data):
     auth_token = request.cookies.get("auth_token")
 
