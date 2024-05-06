@@ -12,7 +12,13 @@
             <option value="phones">Phones</option>
         </select>
     </div>
+
+    <!-- Dark mode button -->
+    <div class="dark-mode-toggle">
+        <button onclick="toggleDarkMode()">Dark Mode</button>
+    </div>
     
+
 
     <!-- New posts -->
     <div class="all">
@@ -47,5 +53,14 @@
         <a href="/post" class="new-post-button">+</a>
         <a href="/chat" class="new-post-button" id="chat-button">chat</a>
     </div>
+
+    <script>
+        function toggleDarkMode() {
+            fetch('/toggle-dark-mode')
+                .then(response => {
+                    window.location.reload(); // Reload the page after toggling dark mode
+                });
+        }
+    </script>
     
 {% endblock %}

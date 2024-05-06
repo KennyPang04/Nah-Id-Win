@@ -13,6 +13,7 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 import time
 
+
 app = Flask(__name__)
 
 app.config["SECRET_KEY"] = os.environ.get('SECRET_KEY')
@@ -37,6 +38,7 @@ def add_header(response):
     response.headers['Cache-Control'] = 'no-store'
     return response
 
+
 @app.errorhandler(429)
 def ratelimit_handler(e):
     ip = get_remote_address()
@@ -49,6 +51,22 @@ def is_ip_blocked(ip):
 def block_ip(ip):
     ip_address[ip] = time.time() + 30
 
+
+@app.route('/toggle-dark-mode')
+def toggle_dark_mode():
+    # Get the current dark mode preference from the cookie
+    dark_mode = request.cookies.get('dark_mode')
+    if dark_mode == 'True':
+        dark_mode = False
+    else:
+        dark_mode = True
+
+    # Update the dark mode preference cookie with the new value
+    resp = make_response(redirect('/'))
+    resp.set_cookie('dark_mode', str(dark_mode))
+
+    return resp
+    
 @app.route('/')
 @limiter.limit("50 per 10 seconds")
 def index():
@@ -59,6 +77,11 @@ def index():
 
     auth_token = request.cookies.get("auth_token")
 
+    dark_mode = request.cookies.get('dark_mode')
+    if dark_mode == "True":
+        dark_mode = True
+    else:
+        dark_mode = False
     username = None
     # checks if user is logged in
     if auth_token:
@@ -70,31 +93,46 @@ def index():
             # check for posts and load posts
             if db.posts is not None:  #if there is a database
                 data = db.posts.find({})
-                return render_template("index.html", content_type='text/html', logged_in=log, data=data, username=username)  
+                return render_template("index.html", content_type='text/html', logged_in=log, data=data, username=username,dark_mode=dark_mode)  
             else:
-                return render_template("index.html", content_type='text/html', logged_in=log, username=username)
+                return render_template("index.html", content_type='text/html', logged_in=log, username=username,dark_mode=dark_mode)
     else:
         log = False
     #for guest page, check for posts and loads them
     if db.posts is not None:  #if there is a database
         data = db.posts.find({})
-        return render_template("index.html", content_type='text/html', logged_in=log, data=data)
+        return render_template("index.html", content_type='text/html', logged_in=log, data=data,dark_mode=dark_mode)
     
-    return render_template("index.html", content_type='text/html', logged_in=log)
+    return render_template("index.html", content_type='text/html', logged_in=log,dark_mode=dark_mode)
 
 #takes the user to the register form
 @app.route("/register")
 def registerPath():
-    return render_template('register.html', content_type='text/html')
+    dark_mode = request.cookies.get('dark_mode')
+    if dark_mode == 'True':
+        dark_mode = True
+    else:
+        dark_mode = False
+    return render_template('register.html', content_type='text/html',dark_mode=dark_mode)
 
 #takes the user to the login form
 @app.route("/login")
 def loginPath():
-    return render_template('login.html', content_type='text/html')
+    dark_mode = request.cookies.get('dark_mode')
+    if dark_mode == 'True':
+        dark_mode = True
+    else:
+        dark_mode = False
+    return render_template('login.html', content_type='text/html',dark_mode=dark_mode)
 
 #takes the user to the post form
 @app.route("/post")
 def postPath():
+    dark_mode = request.cookies.get('dark_mode')
+    if dark_mode == 'True':
+        dark_mode = True
+    else:
+        dark_mode = False
     auth_token = request.cookies.get("auth_token")
     
     username = None
@@ -105,13 +143,18 @@ def postPath():
         if(user != None):
             username = user['username']
 
-        return render_template('post.html', content_type='text/html', logged_in=True, username=username)
+        return render_template('post.html', content_type='text/html', logged_in=True, username=username,dark_mode=dark_mode)
     else:
         return redirect('/login')
     
 #takes the user to the global chat 
 @app.route("/chat")
 def chat():
+    dark_mode = request.cookies.get('dark_mode')
+    if dark_mode == 'True':
+        dark_mode = True
+    else:
+        dark_mode = False
     auth_token = request.cookies.get("auth_token")
     username = None
     # User must be logged in to post
@@ -120,7 +163,7 @@ def chat():
         user = db.accounts.find_one({"token":hashed_token})
         if(user != None):
             username = user['username']
-        return render_template('global.html', content_type='text/html', logged_in=True, data=db.global_chat.find({}), username=username)
+        return render_template('global.html', content_type='text/html', logged_in=True, data=db.global_chat.find({}), username=username,dark_mode=dark_mode)
     else:
         return redirect('/login')
     
@@ -306,6 +349,11 @@ def sending(data):
         user = db.accounts.find_one({"token":hashed_token})
         if(user != None):
             username = user['username']
+    
+    if data["delay"] != 0 or data["delay"] != None or data["delay"] != "":
+        time.sleep(int(data["delay"]))
+
+
     data["message"] = extra.escape_html(data["message"])
     emit("chat", {'username': username, 'message': data}, broadcast=True)
     db.global_chat.insert_one({'username': username, 'message': data})
