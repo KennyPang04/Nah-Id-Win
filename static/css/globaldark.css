@@ -41,8 +41,17 @@ body {
     padding-top: 8px;
 }
 
-#inputMSG, #scheduleMSG {
+#inputMSG {
     width: 60%;
+    padding: 4px;
+    background-color: #444;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+}
+
+#scheduleMSG {
+    width: 30%;
     padding: 4px;
     background-color: #444;
     color: #fff;
