@@ -320,7 +320,15 @@ def sending(data):
             username = user['username']
     
     if data["delay"] != 0 or data["delay"] != None or data["delay"] != "":
-        time.sleep(int(data["delay"]))
+        timer = int(data["delay"])
+        while timer > 0:
+            emit("time_left", {"seconds": timer}, room=request.sid)
+            time.sleep(1)
+            timer -= 1
+
+        if timer == 0:
+            emit("time_left", {"seconds": 0}, room=request.sid)
+        
 
 
     data["message"] = extra.escape_html(data["message"])

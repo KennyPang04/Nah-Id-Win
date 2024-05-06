@@ -34,7 +34,9 @@
             <input id="scheduleMSG" type="text" placeholder="Seconds" required>
             <button id="butt" type="submit" onClick="sendMsg()">Submit</button>
         </div>
-        
+        <div id="TIMER">
+            Time till send: 0s
+        </div>
     </div>
 </div>
 <script type="text/javascript">
@@ -42,6 +44,7 @@
     sockets.connect("wss://nahidwin.org/chat");
 	
     const chats = document.getElementById("messages");
+    const time = document.getElementById("TIMER")
 
     const sendMsg = () => {
         var input = document.getElementById("inputMSG").value;
@@ -66,6 +69,15 @@
     sockets.on("chat", (data) => {
         console.log(data);
         displayMsg(data);
+    });
+
+    sockets.on("time_left", (data) => {
+        time_remaining = data["seconds"];
+        if (time_remaining == 0) {
+            time.textContent = "Sent!"
+        } else {
+            time.textContent = "Time till send: " + data["seconds"] + "s";
+        }
     });
 </script>
 {% endblock %}
