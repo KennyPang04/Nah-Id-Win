@@ -24,9 +24,17 @@ UPLOAD_FOLDER = 'static/images/'
 ALLOWED_EXTENSIONS = {'png'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
+def get_client_ip():
+    if "X-Real-IP" in request.headers:
+        return request.headers.get("X-Real-IP")
+    elif "X-Forwarded-For" in request.headers:
+        return request.headers.get("X-Forwarded-For").split(",")[0]
+    else:
+        return request.remote_addr
+
 limiter = Limiter(
         app=app, 
-        key_func=get_remote_address,
+        key_func=get_client_ip,
         default_limits=['50 per 10 seconds'],
 )
 
@@ -41,7 +49,7 @@ def add_header(response):
 
 @app.errorhandler(429)
 def ratelimit_handler(e):
-    ip = get_remote_address()
+    ip = get_client_ip()
     block_ip(ip)
     return "Too Many Requests, try again later", 429
 
@@ -70,7 +78,7 @@ def toggle_dark_mode():
 @app.route('/')
 @limiter.limit("50 per 10 seconds")
 def index():
-    addy = get_remote_address()
+    addy = get_client_ip()
     
     if is_ip_blocked(addy):
         return "Too Many Requests, try again later", 429
@@ -315,11 +323,21 @@ def logout():
 @app.route('/static/js/<path:filename>')
 @limiter.limit("50 per 10 seconds")
 def js(filename):   
+    addy = get_client_ip()
+    
+    if is_ip_blocked(addy):
+        return "Too Many Requests, try again later", 429
+    
     return send_from_directory('static/js', filename, mimetype='text/javascript')
 
 @app.route('/static/css/<path:filename>')
 @limiter.limit("50 per 10 seconds")
 def css(filename):
+    addy = get_client_ip()
+    
+    if is_ip_blocked(addy):
+        return "Too Many Requests, try again later", 429
+    
     return send_from_directory('static/css', filename, mimetype='text/css')
 
 @app.route('/static/image/<path:filename>')
@@ -340,6 +358,12 @@ def img(filename):
 @socketio.on("sends")
 @limiter.limit("50 per 10 seconds")
 def sending(data):
+
+    addy = get_client_ip()
+    
+    if is_ip_blocked(addy):
+        return "Too Many Requests, try again later", 429
+    
     auth_token = request.cookies.get("auth_token")
 
     username = None
