@@ -16,10 +16,10 @@ Testing Procedures:<br>
 1. Navigate to the public deployment or localhost:8080 (if using docker) <br>
 
 2. Make sure the page loads in light mode <br>
-- Check if the dark mode cookie is set to False <br>
+2a. Check if the dark mode cookie is set to False <br>
 3. Click the Dark Mode button under categories <br>
 4. Make sure the page reloads in dark mode <br>
-- Check if dark mode cookie was set to True <br> 
+4a. Check if dark mode cookie was set to True <br> 
 
 5. Register & Login using dark mode <br>
 6. After login navigate to the post button and click (bottom right) <br>
