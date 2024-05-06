@@ -53,7 +53,7 @@
         if (input != "" && time != "") {
 		    //console.log("this works");
             if (isNaN(time)) {
-                time = 0;h
+                time = 0;
             }
             sockets.emit("sends", {message: input, delay: time});
         }
