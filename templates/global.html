@@ -50,9 +50,9 @@
         var input = document.getElementById("inputMSG").value;
         var time = document.getElementById("scheduleMSG").value;
         // input = input.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
-        if (input != "" && time != "") {
+        if (input != "") {
 		    //console.log("this works");
-            if (isNaN(time)) {
+            if (isNaN(time) || time == "") {
                 time = 0;
             }
             sockets.emit("sends", {message: input, delay: time});
