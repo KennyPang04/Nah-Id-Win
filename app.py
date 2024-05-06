@@ -80,7 +80,12 @@ def index():
 #takes the user to the register form
 @app.route("/register")
 def registerPath():
-    return render_template('register.html', content_type='text/html')
+    dark_mode = request.cookies.get('dark_mode')
+    if dark_mode == 'True':
+        dark_mode = True
+    else:
+        dark_mode = False
+    return render_template('register.html', content_type='text/html',dark_mode=dark_mode)
 
 #takes the user to the login form
 @app.route("/login")
@@ -95,6 +100,11 @@ def loginPath():
 #takes the user to the post form
 @app.route("/post")
 def postPath():
+    dark_mode = request.cookies.get('dark_mode')
+    if dark_mode == 'True':
+        dark_mode = True
+    else:
+        dark_mode = False
     auth_token = request.cookies.get("auth_token")
     
     username = None
@@ -105,13 +115,18 @@ def postPath():
         if(user != None):
             username = user['username']
 
-        return render_template('post.html', content_type='text/html', logged_in=True, username=username)
+        return render_template('post.html', content_type='text/html', logged_in=True, username=username,dark_mode=dark_mode)
     else:
         return redirect('/login')
     
 #takes the user to the global chat 
 @app.route("/chat")
 def chat():
+    dark_mode = request.cookies.get('dark_mode')
+    if dark_mode == 'True':
+        dark_mode = True
+    else:
+        dark_mode = False
     auth_token = request.cookies.get("auth_token")
     username = None
     # User must be logged in to post
@@ -120,7 +135,7 @@ def chat():
         user = db.accounts.find_one({"token":hashed_token})
         if(user != None):
             username = user['username']
-        return render_template('global.html', content_type='text/html', logged_in=True, data=db.global_chat.find({}), username=username)
+        return render_template('global.html', content_type='text/html', logged_in=True, data=db.global_chat.find({}), username=username,dark_mode=dark_mode)
     else:
         return redirect('/login')
     

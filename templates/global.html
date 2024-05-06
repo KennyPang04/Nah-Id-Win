@@ -3,8 +3,16 @@
 
 {% block title %}Global Chat{% endblock %}
 
+
 {% block css %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}">
+{% if dark_mode %}
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/darkmode.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/globaldark.css') }}">
+        {% endif %}
+{% if not dark_mode %}
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}">
+{% endif %}
 {% endblock %}
 
 {% block content %}

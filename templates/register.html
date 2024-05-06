@@ -4,7 +4,15 @@
 {% block title %}Register{% endblock %}
 
 {% block css %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+{% if dark_mode %}
+            <link rel="stylesheet" href="{{ url_for('static', filename='css/darkmode.css') }}">
+            <link rel="stylesheet" href="{{ url_for('static', filename='css/authdark.css') }}">
+        {% endif %}
+{% if not dark_mode %}
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+{% endif %}
+
 {% endblock %}
 
 {% block content %}
