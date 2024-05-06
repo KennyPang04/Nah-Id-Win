@@ -14,11 +14,13 @@ Creativity: Done by ziyao, For creativity I implemented an dark mode feature whe
 <br>
 Testing Procedures:<br>
 1. Navigate to the public deployment or localhost:8080 (if using docker) <br>
-2a. Make sure the page loads in light mode <br>
-2b. Check if the dark mode cookie is set to False <br>
+
+2. Make sure the page loads in light mode <br>
+- Check if the dark mode cookie is set to False <br>
 3. Click the Dark Mode button under categories <br>
-4a. Make sure the page reloads in dark mode <br>
-4b. Check if dark mode cookie was set to True <br> 
+4. Make sure the page reloads in dark mode <br>
+- Check if dark mode cookie was set to True <br> 
+
 5. Register & Login using dark mode <br>
 6. After login navigate to the post button and click (bottom right) <br>
 7. Check if the post page is loaded in dark mode <br>
