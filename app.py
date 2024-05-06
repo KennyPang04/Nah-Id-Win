@@ -1,7 +1,6 @@
-from flask import Flask, flash, render_template,request, send_from_directory,redirect,url_for,make_response
+from flask import Flask, render_template,request, send_from_directory,redirect,url_for,make_response,abort
 from werkzeug.utils import secure_filename
 from authentication import extract_credentials,validate_password,extract_credentialslogin
-from pymongo import MongoClient
 from db import db
 import bcrypt
 import hashlib
@@ -10,23 +9,48 @@ import html
 import extra
 import os
 from flask_socketio import  emit, SocketIO
-import ssl
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 import time
 
 
 app = Flask(__name__)
+
 app.config["SECRET_KEY"] = os.environ.get('SECRET_KEY')
+
 socketio = SocketIO(app)
 
 UPLOAD_FOLDER = 'static/images/'
 ALLOWED_EXTENSIONS = {'png'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
+limiter = Limiter(
+        app=app, 
+        key_func=get_remote_address,
+        default_limits=['50 per 10 seconds'],
+)
+
+ip_address = {}
 
 @app.after_request
 def add_header(response):
     response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['Cache-Control'] = 'no-store'
     return response
+
+
+@app.errorhandler(429)
+def ratelimit_handler(e):
+    ip = get_remote_address()
+    block_ip(ip)
+    return "Too Many Requests, try again later", 429
+
+def is_ip_blocked(ip):
+    return ip in ip_address and ip_address[ip] > time.time()
+
+def block_ip(ip):
+    ip_address[ip] = time.time() + 30
+
 
 @app.route('/toggle-dark-mode')
 def toggle_dark_mode():
@@ -44,8 +68,13 @@ def toggle_dark_mode():
     return resp
     
 @app.route('/')
+@limiter.limit("50 per 10 seconds")
 def index():
-    print("hello")
+    addy = get_remote_address()
+    
+    if is_ip_blocked(addy):
+        return "Too Many Requests, try again later", 429
+
     auth_token = request.cookies.get("auth_token")
 
     dark_mode = request.cookies.get('dark_mode')
@@ -75,7 +104,6 @@ def index():
         return render_template("index.html", content_type='text/html', logged_in=log, data=data,dark_mode=dark_mode)
     
     return render_template("index.html", content_type='text/html', logged_in=log,dark_mode=dark_mode)
-
 
 #takes the user to the register form
 @app.route("/register")
@@ -285,10 +313,12 @@ def logout():
     return resp
 
 @app.route('/static/js/<path:filename>')
+@limiter.limit("50 per 10 seconds")
 def js(filename):   
     return send_from_directory('static/js', filename, mimetype='text/javascript')
 
 @app.route('/static/css/<path:filename>')
+@limiter.limit("50 per 10 seconds")
 def css(filename):
     return send_from_directory('static/css', filename, mimetype='text/css')
 
@@ -308,6 +338,7 @@ def img(filename):
     return send_from_directory('static/image', filename, mimetype=mimetype)
 
 @socketio.on("sends")
+@limiter.limit("50 per 10 seconds")
 def sending(data):
     auth_token = request.cookies.get("auth_token")
 
